@@ -1,0 +1,7 @@
+{
+    "empleado": 1,
+    "independiente": 2,
+    "funcionariopublico": 4,
+    "pensionado": 3,
+    "desempleado": 2
+}

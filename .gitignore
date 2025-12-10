@@ -1,0 +1,19 @@
+# Ingorar los archivos de cache de python
+/__pycache__/
+/logs/
+__pycache__/
+
+/.idx 
+.idx 
+/.idx/
+
+.venv/
+
+/test 
+/test/
+logs/
+*.log
+.DS_Store
+*.pyc
+__pycache__/
+src/**/__pycache__/

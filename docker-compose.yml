@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: DockerFile
+    image: alocredit:hortensia_co
+    ports:
+      - "5000:5000"
+    # volumes:
+    #  - .:/app
+    networks:
+      - default
+    environment:
+      FLASK_ENV: development
+    restart: always

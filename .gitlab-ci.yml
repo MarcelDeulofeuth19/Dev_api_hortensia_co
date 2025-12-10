@@ -1,0 +1,48 @@
+stages:
+  - prod
+
+variables:
+  # Fija el nombre del proyecto de Compose para etiquetar recursos de forma consistente
+  COMPOSE_PROJECT_NAME: hortensia_co
+
+prod:
+  stage: prod
+  tags:
+    - prod
+  script:
+    # Sincroniza el código de CI al servidor destino
+    - rsync -av --delete "$CI_PROJECT_DIR"/ /srv/containers/api-hortensia-co/
+    - cd /srv/containers/api-hortensia-co/
+
+    # Asegura que el working copy quede EXACTAMENTE en origin/main
+    - git fetch --all --prune
+    - git reset --hard origin/main
+    - git clean -fdx
+
+    - chmod -R 775 /srv/containers/api-hortensia-co/
+
+    # 1) Baja el stack y elimina las imágenes locales construidas por este compose
+    - docker compose -p "$COMPOSE_PROJECT_NAME" down --rmi local --remove-orphans
+
+    # 2) Limpia imágenes "dangling" (sin tag) que dejó el build anterior
+    - docker image prune -f
+
+    # 3) (Opcional y seguro) Borra cualquier imagen etiquetada de este proyecto
+    #    que no esté en uso por contenedores (ya bajamos todo con 'down'):
+    - |
+      ids="$(docker images --format '{{.Repository}}:{{.Tag}} {{.ID}}' \
+            | awk '$1 ~ /^alocredit:hortensia_co$/ || $1 ~ /^alocredit:hortensia_co@/ {print $2}')"
+      if [ -n "$ids" ]; then
+        docker rmi -f $ids || true
+      fi
+
+    # 4) Rebuild y despliegue
+    - docker compose -p "$COMPOSE_PROJECT_NAME" build --pull
+    - docker compose -p "$COMPOSE_PROJECT_NAME" up -d --remove-orphans
+
+    # 5) (Opcional) Limpia caché de builder para ahorrar disco del host:
+    # - docker builder prune -af
+
+  only:
+    refs:
+      - main

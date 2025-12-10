@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Umbrales</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container my-5">
+    <h1>Umbrales de crédito</h1>
+    <form method="POST">
+      {% for key, pair in umbrales.items() %}
+      <div class="row g-3 align-items-center mb-2">
+        <div class="col-auto"><label class="col-form-label">{{ key }}</label></div>
+        <div class="col-auto">
+          <input class="form-control" type="number" step="any" name="{{ key }}_lower" value="{{ pair[0] }}">
+        </div>
+        <div class="col-auto">
+          <input class="form-control" type="number" step="any" name="{{ key }}_upper" value="{{ pair[1] }}">
+        </div>
+      </div>
+      {% endfor %}
+      <button class="btn btn-primary" type="submit">Guardar</button>
+    </form>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
